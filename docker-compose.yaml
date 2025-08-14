@@ -1,0 +1,41 @@
+services:
+  backend:
+    build: ../persona-nodejs-backend/
+    ports:
+      - "9000:9000"
+    networks:
+      - persona-network
+    env_file:
+      - ../persona-nodejs-backend/.env
+    depends_on:
+      - redis
+    command: [ "npx", "nodemon", "./server.js" ]
+
+  frontend:
+    build: ../persona-react-frontend/
+    ports:
+      - "3000:3000"
+    networks:
+      - persona-network
+    env_file:
+      - ../persona-react-frontend/.env
+    command: [ "npm", "start" ]
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: [ "redis-server", "--appendonly", "yes" ]
+    networks:
+      - persona-network
+
+volumes:
+  redis-data:
+
+
+networks:
+  persona-network:
+    driver: bridge
